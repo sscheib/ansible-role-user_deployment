@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: 'user_deployment'
+  namespace: 'sscheib'
+  author: 'Steffen Scheib'
+  description: 'Simple role to create users and add SSH keys to them'
+  issue_tracker_url: 'https://github.com/sscheib/ansible-role-rhel_iso_kickstart/issues'
+  license: 'GPL-2.0-or-later'
+  min_ansible_version: '2.12'
+  platforms:
+    - name: 'EL'
+      versions:
+        - '9'
+        - '8'
+  galaxy_tags:
+    - 'user'
+dependencies: []
+...

@@ -1,0 +1,106 @@
+---
+# NOTE: _udm_quiet_assert does not impact this task, as it first needs to be ensured that it actually is
+#       properly defined
+- name: 'Ensure mandatory variables, as  well as variables, which have a default value, are set (boolean)'
+  ansible.builtin.assert:
+    that:
+      - "lookup('ansible.builtin.vars', item) is defined"
+      - "lookup('ansible.builtin.vars', item) | bool | string == lookup('ansible.builtin.vars', item) | string"
+      - "lookup('ansible.builtin.vars', item) is boolean"
+    success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
+    fail_msg: "Variable '{{ item }}' failed to validate"
+  loop:
+    - '_udm_quiet_assert'
+  loop_control:
+    label: 'variable: {{ item }}'
+
+- name: 'Ensure _users is defined properly'
+  ansible.builtin.assert:
+    that:
+      # _user.name
+      - '_user.name is defined'
+      - '_user.name is string'
+      - '_user.name != None'
+      - "_user.name != ''"
+
+      # _user.gecos
+      - '(_user.comment is defined) | ternary(_user.comment | default(None) is string, true)'
+      - '(_user.comment is defined) | ternary(_user.comment | default(None) != None, true)'
+      - "(_user.comment is defined) | ternary(_user.comment | default(None) != '', true)"
+
+      # _user.shell
+      - '(_user.shell is defined) | ternary(_user.shell | default(None) is string, true)'
+      - '(_user.shell is defined) | ternary(_user.shell | default(None) != None, true)'
+      - "(_user.shell is defined) | ternary(_user.shell | default(None) != '', true)"
+
+      # _user.home
+      - '(_user.home is defined) | ternary(_user.home | default(None) is string, true)'
+      - '(_user.home is defined) | ternary(_user.home | default(None) != None, true)'
+      - "(_user.home is defined) | ternary(_user.home | default(None) != '', true)"
+
+      # _user.password
+      - '(_user.password is defined) | ternary(_user.password | default(None) is string, true)'
+      - '(_user.password is defined) | ternary(_user.password | default(None) != None, true)'
+      - "(_user.password is defined) | ternary(_user.password | default(None) != '', true)"
+
+      # _user.uid
+      - >-
+          (_user.uid is defined) | ternary(_user.uid | default(None) | int | string
+          == _user.uid | default(None) | string, true)
+      - '(_user.uid is defined) | ternary(_user.uid | default(None) is number, true)'
+      - '(_user.uid is defined) | ternary(_user.uid | default(None) is integer, true)'
+      - '(_user.uid is defined) | ternary(_user.uid | default(None) >= 1, true)'
+
+      # _user.remove_unspecified_ssh_keys
+      - >-
+          (_user.remove_unspecified_ssh_keys is defined) |
+          ternary(_user.remove_unspecified_ssh_keys | default(None) | bool | string
+          == _user.remove_unspecified_ssh_keys | default(None) | string, true)
+      - >-
+          (_user.remove_unspecified_ssh_keys is defined) |
+          ternary(_user.remove_unspecified_ssh_keys | default(None) is boolean, true)
+
+      # _user.always_update_password
+      - >-
+          (_user.always_update_password is defined) |
+          ternary(_user.always_update_password | default(None) | bool | string
+          == _user.always_update_password | default(None) | string, true)
+      - >-
+          (_user.always_update_password is defined) |
+          ternary(_user.always_update_password | default(None) is boolean, true)
+
+      # _user.privileged
+      - >-
+          (_user.privileged is defined) | ternary(_user.privileged | default(None) | bool | string
+          == _user.privileged | default(None) | string, true)
+      - '(_user.privileged is defined) | ternary(_user.privileged | default(None) is boolean, true)'
+
+      # _user.groups
+      - >-
+          (_user.groups is defined) | ternary(_user.groups | default([]) | list | string
+          == _user.groups | default(None) | string, true)
+      - '(_user.groups is defined) | ternary(_user.groups | default([]) is sequence, true)'
+
+      # _user.authorized_keys
+      - >-
+          (_user.authorized_keys is defined) | ternary(_user.authorized_keys | default([]) | list | string
+          == _user.authorized_keys | default(None) | string, true)
+      - '(_user.authorized_keys is defined) | ternary(_user.authorized_keys | default([]) is sequence, true)'
+    success_msg: 'Users are defined correctly'
+    fail_msg: 'One or more users failed to validated correctly'
+    quiet: '{{ _udm_quiet_assert }}'
+  no_log: true
+  loop: '{{ _udm_users }}'
+  loop_control:
+    loop_var: '_user'
+
+- name: 'Include tasks to ensure that user groups are defined properly'
+  ansible.builtin.include_tasks:
+    file: 'assert_user_groups.yml'
+  loop: '{{ _udm_users }}'
+  loop_control:
+    loop_var: '_user'
+  when: >
+    _user.groups is defined
+    and _user.groups | length > 0
+...

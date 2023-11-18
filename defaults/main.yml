@@ -1,0 +1,7 @@
+---
+# whether to enable passwordless sudo
+_def_udm_enable_passwordless_sudo: false
+
+# whether to quiet assert
+_def_udm_quiet_assert: false
+...

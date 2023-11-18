@@ -1,0 +1,19 @@
+---
+- name: 'Include tasks to ensure all variables are defined properly'
+  ansible.builtin.include_tasks:
+    file: 'assert.yml'
+
+- name: 'Ensure operating system facts are gathered'
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+      - '!min'
+      - 'os_family'
+
+- name: 'Include tasks to create users'
+  ansible.builtin.include_tasks:
+    file: 'create_user.yml'
+  loop: '{{ _udm_users }}'
+  loop_control:
+    loop_var: '__t_user'
+...

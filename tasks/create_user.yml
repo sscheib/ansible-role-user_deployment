@@ -1,0 +1,111 @@
+---
+- name: 'Block: Handle passwordless sudo'
+  run_once: true
+  when: >
+    (
+      _udm_enable_passwordless_sudo is defined
+      and _udm_enable_passwordless_sudo
+    )
+    or
+    (
+      __t_user.privileged is defined
+      and __t_user.privileged
+    )
+  block:
+
+    - name: 'set fact: __t_sudo_group'
+      ansible.builtin.set_fact:
+        __t_sudo_group: >-
+          {{
+            'wheel'
+            if ansible_os_family == 'RedHat'
+            else 'sudo'
+          }}
+      when: >
+        __t_user.privileged is defined
+        and __t_user.privileged
+
+    - name: 'Ensure that users in the privileged group are able sudo without password: {{ __t_sudo_group }}'
+      ansible.builtin.lineinfile:
+        path: '/etc/sudoers'
+        regexp: '^%{{ __t_sudo_group }}'
+        line: '%{{ __t_sudo_group }} ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+      become: true
+      when: >
+        _udm_enable_passwordless_sudo is defined
+        and _udm_enable_passwordless_sudo
+
+- name: 'Ensure user groups are present'
+  ansible.builtin.group:
+    name: '{{ __t_group.name }}'
+    gid: '{{ __t_group.gid | default(omit) }}'
+  become: true
+  loop: '{{ __t_user.groups }}'
+  loop_control:
+    loop_var: '__t_group'
+
+- name: 'Create user {{ __t_user.name }}'
+  ansible.builtin.user:
+    name: '{{ __t_user.name }}'
+    comment: '{{ __t_user.comment | default(omit) }}'
+    uid: '{{ __t_user.uid | default(omit) }}'
+    gid: '{{ __t_user.gid | default(omit) }}'
+    create_home: '{{ __t_user.create_home | default(omit) }}'
+    home: '{{ __t_user.home | default(omit) }}'
+    groups: "{{ [ __t_sudo_group ] | default([]) + __t_user.groups | map(attribute='name') }}"
+    shell: '{{ __t_user.shell | default(omit) }}'
+    password: >-
+      {{
+        '*'
+        if __t_user.password is not defined or __t_user.password == '*'
+        else
+        __t_user.password | string | ansible.builtin.password_hash(hashtype='sha512')
+      }}
+    update_password: >-
+      {{
+        'always'
+        if __t_user.always_update_password is defined and __t_user.always_update_password
+        else
+        'on_create'
+      }}
+  become: true
+
+- name: 'Set fact: Lookup SSH keys'
+  ansible.builtin.set_fact:
+    __t_authorized_keys: >-
+      {{
+        __t_authorized_keys | default([]) + [
+          lookup('file', __t_key)
+        ]
+      }}
+  when: >
+    lookup('first_found', dict(files=[__t_key], skip=true)) |
+    ternary(lookup('file', __t_key, errors='ignore'), false)
+  loop: '{{ __t_user.authorized_keys }}'
+  loop_control:
+    loop_var: '__t_key'
+
+- name: 'Set fact: Append inline SSH keys'
+  ansible.builtin.set_fact:
+    __t_authorized_keys: >-
+      {{
+        __t_authorized_keys | default([]) + [
+          __t_key
+        ]
+      }}
+  when: >
+    not lookup('first_found', dict(files=[__t_key], skip=true)) |
+    ternary(lookup('file', __t_key, errors='ignore'), false)
+  loop: '{{ __t_user.authorized_keys }}'
+  loop_control:
+    loop_var: '__t_key'
+
+- name: 'Transfer authorized key for user steffen'
+  ansible.posix.authorized_key:
+    user: '{{ __t_user.name }}'
+    state: 'present'
+    key: "{{ __t_authorized_keys | join('\n') }}"
+    exclusive: '{{ __t_user.remove_unspecified_ssh_keys | default(omit) }}'
+  become: true
+...
