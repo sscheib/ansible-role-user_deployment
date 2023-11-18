@@ -3,8 +3,8 @@
   run_once: true
   when: >
     (
-      _udm_enable_passwordless_sudo is defined
-      and _udm_enable_passwordless_sudo
+      _user_deployment_enable_passwordless_sudo is defined
+      and _user_deployment_enable_passwordless_sudo
     )
     or
     (
@@ -33,8 +33,8 @@
         validate: 'visudo -cf %s'
       become: true
       when: >
-        _udm_enable_passwordless_sudo is defined
-        and _udm_enable_passwordless_sudo
+        _user_deployment_enable_passwordless_sudo is defined
+        and _user_deployment_enable_passwordless_sudo
 
 - name: 'Ensure user groups are present'
   ansible.builtin.group:

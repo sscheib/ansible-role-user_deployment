@@ -1,5 +1,5 @@
 ---
-- name: 'Ensure _udm_users.groups are defined properly'
+- name: 'Ensure _user_deployment_users.groups are defined properly'
   ansible.builtin.assert:
     that:
       # _group.name
@@ -17,7 +17,7 @@
       - '(_group.gid is defined) | ternary(_group.gid | default(None) >= 1, true)'
     success_msg: 'Groups are defined correctly'
     fail_msg: 'One or more groups failed to validated correctly'
-    quiet: '{{ _udm_quiet_assert }}'
+    quiet: '{{ _user_deployment_quiet_assert }}'
   loop: '{{ _user.groups }}'
   loop_control:
     loop_var: '_group'

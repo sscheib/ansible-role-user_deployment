@@ -1,7 +1,7 @@
 ---
 # whether to enable passwordless sudo
-_def_udm_enable_passwordless_sudo: false
+_def_user_deployment_enable_passwordless_sudo: false
 
 # whether to quiet assert
-_def_udm_quiet_assert: false
+_def_user_deployment_quiet_assert: false
 ...

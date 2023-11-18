@@ -8,18 +8,18 @@ Role Variables
 --------------
 | variable                                     | default                      | required | description                                                                    |
 | :---------------------------------           | :--------------------------- | :------- | :----------------------------------------------------------------------------- |
-| `udm_users`                                  | unset                        | true     | Users to deploy                                                                |
-| `udm_enable_passwordless_sudo`               | `false`                      | false    | Whether to enable passwordless sudo for the privileged group (e.g. `wheel`)    |
-| `udm_quiet_assert`                           | `false`                      | false    | Whether to quiet the assert statements                                         |
+| `user_deployment_users`                      | unset                        | true     | Users to deploy                                                                |
+| `user_deployment_enable_passwordless_sudo`   | `false`                      | false    | Whether to enable passwordless sudo for the privileged group (e.g. `wheel`)    |
+| `user_deployment_quiet_assert`               | `false`                      | false    | Whether to quiet the assert statements                                         |
 
-## Variable `udm_users`
+## Variable `user_deployment_users`
 
-An extended example of only the `udm_users` variable is illustrated down below:
+An extended example of only the `user_deployment_users` variable is illustrated down below:
 ```
-udm_users:
-  udm_enable_passwordless_sudo: true
-  udm_quiet_assert: false
-  udm_users:
+user_deployment_users:
+  user_deployment_enable_passwordless_sudo: true
+  user_deployment_quiet_assert: false
+  user_deployment_users:
     - name: 'steffen'                             # Name of the user
       groups:                                     # List of groups to create (if not existent) and add the user to
         - name: 'mygroup'                         # Name of the group
@@ -55,9 +55,9 @@ Example Playbook
   roles:
     - role: 'user_deployment'
       vars:
-        udm_enable_passwordless_sudo: true
-        udm_quiet_assert: false
-        udm_users:
+        user_deployment_enable_passwordless_sudo: true
+        user_deployment_quiet_assert: false
+        user_deployment_users:
           - name: 'steffen'
             groups:
               - name: 'mygroup'

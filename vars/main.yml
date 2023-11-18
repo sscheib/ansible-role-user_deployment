@@ -1,10 +1,14 @@
 ---
 # users to deploy
-_udm_users: '{{ udm_users | mandatory }}'
+_user_deployment_users: '{{ user_deployment_users | mandatory }}'
 
 # whether to enable passwordless sudo
-_udm_enable_passwordless_sudo: '{{ udm_enable_passwordless_sudo | default(_def_udm_enable_passwordless_sudo) }}'
+_user_deployment_enable_passwordless_sudo: >-
+  {{
+    user_deployment_enable_passwordless_sudo |
+    default(_def_user_deployment_enable_passwordless_sudo)
+  }}
 
 # whether to quiet assert
-_udm_quiet_assert: '{{ udm_quiet_assert | default(_def_udm_quiet_assert) }}'
+_user_deployment_quiet_assert: '{{ user_deployment_quiet_assert | default(_def_user_deployment_quiet_assert) }}'
 ...

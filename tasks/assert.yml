@@ -1,5 +1,5 @@
 ---
-# NOTE: _udm_quiet_assert does not impact this task, as it first needs to be ensured that it actually is
+# NOTE: _user_deployment_quiet_assert does not impact this task, as it first needs to be ensured that it actually is
 #       properly defined
 - name: 'Ensure mandatory variables, as  well as variables, which have a default value, are set (boolean)'
   ansible.builtin.assert:
@@ -10,11 +10,11 @@
     success_msg: "Variable '{{ item }}' defined properly - value: '{{ lookup('ansible.builtin.vars', item) }}'"
     fail_msg: "Variable '{{ item }}' failed to validate"
   loop:
-    - '_udm_quiet_assert'
+    - '_user_deployment_quiet_assert'
   loop_control:
     label: 'variable: {{ item }}'
 
-- name: 'Ensure _udm_users is defined properly'
+- name: 'Ensure _user_deployment_users is defined properly'
   ansible.builtin.assert:
     that:
       # _user.name
@@ -88,16 +88,16 @@
       - '(_user.authorized_keys is defined) | ternary(_user.authorized_keys | default([]) is sequence, true)'
     success_msg: 'Users are defined correctly'
     fail_msg: 'One or more users failed to validated correctly'
-    quiet: '{{ _udm_quiet_assert }}'
+    quiet: '{{ _user_deployment_quiet_assert }}'
   no_log: true
-  loop: '{{ _udm_users }}'
+  loop: '{{ _user_deployment_users }}'
   loop_control:
     loop_var: '_user'
 
 - name: 'Include tasks to ensure that user groups are defined properly'
   ansible.builtin.include_tasks:
     file: 'assert_user_groups.yml'
-  loop: '{{ _udm_users }}'
+  loop: '{{ _user_deployment_users }}'
   loop_control:
     loop_var: '_user'
   when: >
