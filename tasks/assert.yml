@@ -14,7 +14,7 @@
   loop_control:
     label: 'variable: {{ item }}'
 
-- name: 'Ensure _users is defined properly'
+- name: 'Ensure _udm_users is defined properly'
   ansible.builtin.assert:
     that:
       # _user.name

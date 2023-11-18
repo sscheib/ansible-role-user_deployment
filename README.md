@@ -14,7 +14,7 @@ Role Variables
 
 ## Variable `udm_users`
 
-An extended example of only the `users` variable is illustrated down below:
+An extended example of only the `udm_users` variable is illustrated down below:
 ```
 udm_users:
   udm_enable_passwordless_sudo: true
