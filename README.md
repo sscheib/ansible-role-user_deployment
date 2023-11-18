@@ -1,4 +1,4 @@
-[![ansible-lint](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-lint.yml/badge.svg?branch=main)](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-lint.yml) [![Publish latest release to Ansible Galaxy](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-galaxy.yml/badge.svg?branch=main)](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-galaxy.yml)
+[![ansible-lint](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-lint.yml) [![Publish latest release to Ansible Galaxy](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-galaxy.yml/badge.svg)](https://github.com/sscheib/ansible-role-user_deployment/actions/workflows/ansible-galaxy.yml)
 
 user_deployment
 =========
