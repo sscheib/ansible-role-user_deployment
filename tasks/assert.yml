@@ -97,6 +97,7 @@
 - name: 'Include tasks to ensure that user groups are defined properly'
   ansible.builtin.include_tasks:
     file: 'assert_user_groups.yml'
+  no_log: true
   loop: '{{ _user_deployment_users }}'
   loop_control:
     loop_var: '_user'

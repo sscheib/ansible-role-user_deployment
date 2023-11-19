@@ -13,6 +13,7 @@
 - name: 'Include tasks to create users'
   ansible.builtin.include_tasks:
     file: 'create_user.yml'
+  no_log: true
   loop: '{{ _user_deployment_users }}'
   loop_control:
     loop_var: '__t_user'
