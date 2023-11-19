@@ -49,7 +49,7 @@
           == _user.uid | default(None) | string, true)
       - '(_user.uid is defined) | ternary(_user.uid | default(None) is number, true)'
       - '(_user.uid is defined) | ternary(_user.uid | default(None) is integer, true)'
-      - '(_user.uid is defined) | ternary(_user.uid | default(None) >= 1, true)'
+      - '(_user.uid is defined) | ternary(_user.uid | default(None) | int >= 1, true)'
 
       # _user.remove_unspecified_ssh_keys
       - >-
