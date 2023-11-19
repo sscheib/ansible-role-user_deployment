@@ -41,6 +41,9 @@
     name: '{{ __t_group.name }}'
     gid: '{{ __t_group.gid | default(omit) }}'
   become: true
+  when: >
+    __t_user.groups is defined
+    and __t_user.groups | length > 0
   loop: '{{ __t_user.groups }}'
   loop_control:
     loop_var: '__t_group'
@@ -53,7 +56,7 @@
     gid: '{{ __t_user.gid | default(omit) }}'
     create_home: '{{ __t_user.create_home | default(omit) }}'
     home: '{{ __t_user.home | default(omit) }}'
-    groups: "{{ [ __t_sudo_group ] | default([]) + __t_user.groups | map(attribute='name') }}"
+    groups: "{{ [ __t_sudo_group ] | default([]) + __t_user.groups | default([]) | map(attribute='name', default=[]) }}"
     shell: '{{ __t_user.shell | default(omit) }}'
     password: >-
       {{
@@ -82,6 +85,7 @@
   when: >
     lookup('first_found', dict(files=[__t_key], skip=true)) |
     ternary(lookup('file', __t_key, errors='ignore'), false)
+  no_log: true
   loop: '{{ __t_user.authorized_keys }}'
   loop_control:
     loop_var: '__t_key'
@@ -97,6 +101,7 @@
   when: >
     not lookup('first_found', dict(files=[__t_key], skip=true)) |
     ternary(lookup('file', __t_key, errors='ignore'), false)
+  no_log: true
   loop: '{{ __t_user.authorized_keys }}'
   loop_control:
     loop_var: '__t_key'
@@ -107,5 +112,6 @@
     state: 'present'
     key: "{{ __t_authorized_keys | join('\n') }}"
     exclusive: '{{ __t_user.remove_unspecified_ssh_keys | default(omit) }}'
+  no_log: true
   become: true
 ...
